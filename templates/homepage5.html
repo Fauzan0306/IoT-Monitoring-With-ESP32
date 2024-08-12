@@ -1,0 +1,508 @@
+homepage5.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.5">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>IoT Classroom Monitoring</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 1em;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sensor {
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .weather-data {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .humidity {
+            margin-top: 25px;
+            font-size: 20px;
+        }
+
+        .temperature, .time, .status {
+            flex-basis: 50%;
+            margin-bottom: 15px;
+        }
+
+        .temperature p:first-child {
+            font-weight: bold;
+        }
+
+        .temperature p:last-child {
+            font-size: 60px;
+        }
+        .humidity p:first-child {
+            color: #50a3a2;
+        }
+
+        .humidity p:last-child {
+            color: #04425c;
+        }
+
+        .time p {
+            color: #d73d3d;
+            font-size: 20px;
+        }
+
+        .status p {
+            font-style: italic;
+            color: #666;
+            font-size: 20px;
+        }
+
+/* Gaya untuk data container */
+.data-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+/* Gaya untuk setiap data item */
+.data-item {
+    width: 48%; /* Lebar disesuaikan sesuai kebutuhan */
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Gaya untuk judul chart */
+.chart-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Gaya untuk container chart */
+.chart-container {
+    margin-top: 10px;
+}
+
+/* Gaya untuk elemen canvas chart */
+canvas {
+    width: 100%;
+    height: 200px; /* Sesuaikan tinggi sesuai kebutuhan */
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Monitoring Ruang Kelas Gedung Sekolah PNUP</h1>
+    </header>
+    <div class="container">
+        <h1>Avarages Data</h1>
+        <div class="weather-data">
+            <div class="temperature">
+                <p><span id="temperature"></span>°</p>
+            </div>
+            <div class="humidity">
+                <p>Humidity: <span id="humidity"></span>%</p>
+                <div class="lux">
+                    <p>Intensitas Cahaya: <span id="ldr"></span> lx</p>
+                </div>
+                <div class="Co">
+                    <p>Air Quality: <span id="co"></span> ppm</p>
+                </div>
+            </div>
+            <div class="time">
+                <p>Time: <span id="time"></span></p>
+            </div>
+            <div class="status">
+                <p>Keadaan Ruangan: </p>
+                <p><span id="status"></span></p>
+            </div>
+        </div>
+        <div class="data-container">
+    <div class="data-item">
+        <h2 class="chart-title">Temperature</h2>
+        <div class="chart-container">
+            <canvas id="temperatureChart"></canvas>
+        </div>
+    </div>
+    <div class="data-item">
+        <h2 class="chart-title">Humidity</h2>
+        <div class="chart-container">
+            <canvas id="humidityChart"></canvas>
+        </div>
+    </div>
+</div>
+
+        <br>
+
+        <h2>_</h2>
+        <br>
+        <div class="sensor1">
+            <h2>Temperature</h2>
+            <table>
+                <tr>
+                    <th>Room</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Node 1</td>
+                    <td><span id="temperature1"></span>°C</td>
+                </tr>
+
+                <tr>
+                    <td>Node 2</td>
+                    <td><span id="temperature2"></span>°C</td>
+                </tr>
+
+                <tr>
+                    <td>Node 3</td>
+                    <td><span id="temperature3"></span>°C</td>
+                </tr>
+
+                <tr>
+                    <td>Node 4</td>
+                    <td><span id="temperature4"></span>°C</td>
+                </tr>
+                <!-- Add more rows for other rooms if needed -->
+            </table>
+        </div>
+        <br>
+        <div class="sensor2">
+            <h2>Humidity</h2>
+            <table>
+                <tr>
+                    <th>Room</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Node 1</td>
+                    <td><span id="humidity1"></span> %</td>
+                </tr>
+
+                <tr>
+                    <td>Node 2</td>
+                    <td><span id="humidity2"></span> %</td>
+                </tr>
+
+                <tr>
+                    <td>Node 3</td>
+                    <td><span id="humidity3"></span> %</td>
+                </tr>
+
+                <tr>
+                    <td>Node 4</td>
+                    <td><span id="humidity4"></span> %</td>
+                </tr>
+                <!-- Add more rows for other rooms if needed -->
+            </table>
+        </div>
+        <br>
+        <div class="sensor3">
+            <h2>Intensitas Cahaya</h2>
+            <table>
+                <tr>
+                    <th>Room</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Node 1</td>
+                    <td><span id="ldr1"></span> lx</td>
+                </tr>
+
+                <tr>
+                    <td>Node 2</td>
+                    <td><span id="ldr2"></span> lx</td>
+                </tr>
+
+                <tr>
+                    <td>Node 3</td>
+                    <td><span id="ldr3"></span> lx</td>
+                </tr>
+
+                <tr>
+                    <td>Node 4</td>
+                    <td><span id="ldr4"></span> lx</td>
+                </tr>
+                <!-- Add more rows for other rooms if needed -->
+            </table>
+        </div>
+        <br>
+        <div class="sensor4">
+            <h2>Air Quality</h2>
+            <table>
+                <tr>
+                    <th>Room</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Node 1</td>
+                    <td><span id="co1"></span> ppm</td>
+                </tr>
+
+                <tr>
+                    <td>Node 2</td>
+                    <td><span id="co2"></span> ppm</td>
+                </tr>
+
+                <tr>
+                    <td>Node 3</td>
+                    <td><span id="co3"></span> ppm</td>
+                </tr>
+
+                <tr>
+                    <td>Node 4</td>
+                    <td><span id="co4"></span> ppm</td>
+                </tr>
+                <!-- Add more rows for other rooms if needed -->
+            </table>
+        </div>
+    </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+<script>
+var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+socket.on('update_data', function(data) {
+    updateAverages(data);
+    updateCharts(data);
+    updateRoomStatus(data);
+    updateTime;
+});
+
+function updateAverages(data) {
+    document.getElementById('temperature').innerText = data['temperature'].toFixed(2);
+    document.getElementById('humidity').innerText = data['humidity'].toFixed(2);
+    document.getElementById('co').innerText = data['co'].toFixed(2);
+
+    var rawLDRValue = parseFloat (data['ldr']);
+    var reversedLDRValue = 3000 - rawLDRValue;
+    reversedLDRValue = Math.max(200, Math.min(3000, reversedLDRValue));
+    document.getElementById('ldr').innerText = reversedLDRValue.toFixed(2);
+}
+
+var temperatureData = {
+    labels: [],  // Label waktu atau index
+    datasets: [{
+        label: 'Temperature',
+        borderColor: 'rgb(255, 99, 132)',
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        data: [],
+        fill: false,
+    }]
+};
+
+var humidityData = {
+    labels: [],
+    datasets: [{
+        label: 'Humidity',
+        borderColor: 'rgb(54, 162, 235)',
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        data: [],
+        fill: false,
+    }]
+};
+
+var temperatureChart = new Chart(document.getElementById('temperatureChart').getContext('2d'), {
+    type: 'line',
+    data: temperatureData,
+    options: {
+
+    }
+});
+
+var humidityChart = new Chart(document.getElementById('humidityChart').getContext('2d'), {
+    type: 'line',
+    data: humidityData,
+    options: {
+
+    }
+});
+
+
+var maxDataPoints = 10;
+
+    // Fungsi untuk memperbarui chart
+    function updateCharts(data) {
+        // Mendapatkan waktu atau index baru, misalnya timestamp
+        var timestamp = new Date().toLocaleTimeString();
+
+        // Menambahkan waktu atau index ke data chart
+        temperatureData.labels.push(timestamp);
+        humidityData.labels.push(timestamp);
+
+        // Menambahkan data temperature dan humidity ke chart
+        temperatureData.datasets[0].data.push(data['temperature']);
+        humidityData.datasets[0].data.push(data['humidity']);
+
+        // Memastikan kita hanya menyimpan data sebanyak maxDataPoints
+        if (temperatureData.labels.length > maxDataPoints) {
+            temperatureData.labels.shift(); // Hapus elemen pertama
+            temperatureData.datasets[0].data.shift(); // Hapus elemen pertama
+        }
+
+        if (humidityData.labels.length > maxDataPoints) {
+            humidityData.labels.shift(); // Hapus elemen pertama
+            humidityData.datasets[0].data.shift(); // Hapus elemen pertama
+        }
+
+        // Mengupdate chart
+        temperatureChart.update();
+        humidityChart.update();
+    }
+
+socket.on('mqtt_message', function (data) {
+    console.log('Menerima pesan MQTT:', data);
+
+    if (data.topic === "/node1/sensor/temperature"){
+        document.getElementById('temperature1').innerText = data.message;
+    } else if (data.topic === "/node1/sensor/humidity"){
+        document.getElementById('humidity1').innerText = data.message;
+    } else if (data.topic === "/node1/sensor/ldr"){
+        var rawLDRValue1 = parseFloat(data.message);
+        var reversedLDRValue1 = 3000 - rawLDRValue1;
+        reversedLDRValue1 = Math.max(200, Math.min(3000, reversedLDRValue1));
+        document.getElementById('ldr1').innerText = reversedLDRValue1.toFixed(2);
+    } else if (data.topic === "/node1/sensor/co"){
+        document.getElementById('co1').innerText = data.message;
+    } else if (data.topic === "/node2/sensor/temperature"){
+        document.getElementById('temperature2').innerText = data.message;
+    } else if (data.topic === "/node2/sensor/humidity"){
+        document.getElementById('humidity2').innerText = data.message;
+    } else if (data.topic === "/node2/sensor/ldr"){
+         var rawLDRValue2 = parseFloat(data.message);
+        var reversedLDRValue2 = 3000 - rawLDRValue2;
+        reversedLDRValue2 = Math.max(200, Math.min(3000, reversedLDRValue2));
+        document.getElementById('ldr2').innerText = reversedLDRValue2.toFixed(2);
+    } else if (data.topic === "/node2/sensor/co"){
+        document.getElementById('co2').innerText = data.message;
+    } else if (data.topic === "/node3/sensor/temperature"){
+        document.getElementById('temperature3').innerText = data.message;
+    } else if (data.topic === "/node3/sensor/humidity"){
+        document.getElementById('humidity3').innerText = data.message;
+    } else if (data.topic === "/node3/sensor/ldr"){
+         var rawLDRValue1 = parseFloat(data.message);
+        var reversedLDRValue3 = 3000 - rawLDRValue3;
+        reversedLDRValue3 = Math.max(200, Math.min(3000, reversedLDRValue3));
+        document.getElementById('ldr3').innerText = reversedLDRValue3.toFixed(2);
+    } else if (data.topic === "/node3/sensor/co"){
+        document.getElementById('co3').innerText = data.message;
+    } else if (data.topic === "/node4/sensor/temperature"){
+        document.getElementById('temperature4').innerText = data.message;
+    } else if (data.topic === "/node4/sensor/humidity"){
+        document.getElementById('humidity4').innerText = data.message;
+    } else if (data.topic === "/node4/sensor/ldr"){
+        var rawLDRValue4 = parseFloat(data.message);
+        var reversedLDRValue4 = 3000 - rawLDRValue1;
+        reversedLDRValue4 = Math.max(200, Math.min(3000, reversedLDRValue4));
+        document.getElementById('ldr4').innerText = reversedLDRValue4.toFixed(2);
+    } else if (data.topic === "/node4/sensor/co"){
+        document.getElementById('co4').innerText = data.message;
+    }
+});
+
+function updateRoomStatus(data) {
+        // Tentukan batasan ambang batas untuk setiap parameter
+        var temperatureThreshold = 30; // Contoh, sesuaikan dengan batas suhu normal ruangan
+        var humidityThreshold = 70; // Contoh, sesuaikan dengan batas kelembaban normal ruangan
+        var ldrThreshold = 600; // Contoh, sesuaikan dengan batas nilai LDR normal ruangan
+        var coThreshold = 50; // Contoh, sesuaikan dengan batas kadar CO normal ruangan
+
+
+        var rawLDRValue = parseFloat(data['ldr']);
+        var reversedLDRValue = 3000 - rawLDRValue;
+        reversedLDRValue = Math.max(200, Math.min(3000, reversedLDRValue));
+
+        // Inisialisasi status dan warna
+        var roomStatus = 'Anak Kontol';
+        var statusColor = 'green';
+
+        // Cek kondisi abnormal
+        if (data['temperature'] > temperatureThreshold) {
+            roomStatus = 'Suhu Ruangan Tinggi';
+            statusColor = 'red';
+        } else if (data['humidity'] > humidityThreshold) {
+            roomStatus = 'Kelembapan Ruangan Tinggi';
+            statusColor = 'red';
+        } else if (reversedLDRValue > ldrThreshold) {
+            roomStatus = 'Intensitas Cahaya Tinggi';
+            statusColor = 'red';
+        } else if (data['co'] > coThreshold) {
+            roomStatus = 'Kadar Co Tinggi (Kualitas Udara Rendah)';
+            statusColor = 'red';
+        }
+
+        // Menetapkan teks dan warna status
+        document.getElementById('status').innerText = roomStatus;
+        document.getElementById('status').style.color = statusColor;
+    }
+
+function updateTime() {
+    var currentTime = new Date();
+    var hours = currentTime.getHours();
+    var minutes = currentTime.getMinutes();
+    var seconds = currentTime.getSeconds();
+    var day = currentTime.getDate();
+    var month = currentTime.getMonth() + 1; // Bulan dimulai dari 0
+    var year = currentTime.getFullYear();
+
+    // Menambahkan nol di depan angka tunggal (misalnya, 09:05:03)
+    hours = (hours < 10 ? "0" : "") + hours;
+    minutes = (minutes < 10 ? "0" : "") + minutes;
+    seconds = (seconds < 10 ? "0" : "") + seconds;
+
+    // Menetapkan teks ke elemen HTML
+    document.getElementById('time').innerText = hours + ":" + minutes + ":" + seconds;
+}
+
+// Memanggil fungsi updateTime setiap detik
+setInterval(updateTime, 1000);
+
+</script>
+</body>
+</html>
